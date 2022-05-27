@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31129.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pictory", "Pictory\Pictory.csproj", "{51C1EF7A-591B-476A-A742-34A368216315}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{51C1EF7A-591B-476A-A742-34A368216315}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51C1EF7A-591B-476A-A742-34A368216315}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51C1EF7A-591B-476A-A742-34A368216315}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51C1EF7A-591B-476A-A742-34A368216315}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EF620F06-79B3-401D-A78D-163B06073418}
+	EndGlobalSection
+EndGlobal
