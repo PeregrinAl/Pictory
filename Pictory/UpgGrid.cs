@@ -9,7 +9,7 @@ using System.Windows.Media;
 
 namespace Pictory
 {
-    public class UpgGrid : Panel
+    public class UpgGrid : Grid
     {
         protected override Size MeasureOverride(Size availableSize)
         {

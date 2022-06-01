@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:local="clr-namespace:Pictory"
+        Name="window1"
         mc:Ignorable="d"
-        Title="Pictory" Height="700" Width="1100">
+        Title="Pictory" Height="850" Width="1300">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300"></ColumnDefinition>
@@ -39,7 +40,7 @@
             </StackPanel>
 
             <Separator Height="0.8" Background="#46558a" Margin="20 30"/>
-            
+
             <!--buttons-->
             <Button Style="{StaticResource menuButton}" Click="OpenFile_Click">
                 <StackPanel Orientation="Horizontal">
@@ -47,35 +48,31 @@
                     <TextBlock Text="Open file" Style="{StaticResource menuButtonText}"></TextBlock>
                 </StackPanel>
             </Button>
-            <!--<Button Style="{StaticResource menuButton}" Click="SaveFile_Click">
+            <StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <fa:ImageAwesome Icon="Save" Style="{StaticResource menuButtonIcon}"></fa:ImageAwesome>
-                    <TextBlock Text="Save file as..." Style="{StaticResource menuButtonText}"></TextBlock>
+                    <Button Style="{StaticResource menuButton}" Click="SaveFile_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <fa:ImageAwesome Icon="Save" Style="{StaticResource menuButtonIcon}"></fa:ImageAwesome>
+                            <TextBlock Text="Save file as..." Style="{StaticResource menuButtonText}"></TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <ComboBox Name="TypeOfImage" SelectedIndex="0" Margin="20">
+                        <ComboBoxItem>jpg</ComboBoxItem>
+                        <ComboBoxItem>png</ComboBoxItem>
+                        <ComboBoxItem>bmp</ComboBoxItem>
+                    </ComboBox>
                 </StackPanel>
-            </Button>-->
-            <Menu Background="Transparent" Margin="0 0 0 0">
-                <Button Style="{StaticResource menuButton}" Click="SaveFile_Click">
-                    <StackPanel Orientation="Horizontal">
-                        <fa:ImageAwesome Icon="Save" Style="{StaticResource menuButtonIcon}"></fa:ImageAwesome>
-                        <TextBlock Text="Save file as..." Style="{StaticResource menuButtonText}"></TextBlock>
-                    </StackPanel>
-                </Button>
-                <ComboBox Name="TypeOfImage">
-                    <ComboBoxItem>jpg</ComboBoxItem>
-                    <ComboBoxItem>png</ComboBoxItem>
-                    <ComboBoxItem>bmp</ComboBoxItem>
-                </ComboBox>
-            </Menu>
-            <Button Style="{StaticResource menuButton}">
+            </StackPanel>
+            <Button Style="{StaticResource menuButton}" Click="Rotation_Click">
                 <StackPanel Orientation="Horizontal">
-                    <fa:ImageAwesome Icon="Crop" Style="{StaticResource menuButtonIcon}"></fa:ImageAwesome>
-                    <TextBlock Text="Crop" Style="{StaticResource menuButtonText}"></TextBlock>
+                    <fa:ImageAwesome Icon="RotateLeft" Style="{StaticResource menuButtonIcon}"></fa:ImageAwesome>
+                    <TextBlock Text="Rotation" Style="{StaticResource menuButtonText}"></TextBlock>
                 </StackPanel>
             </Button>
-            <Button Style="{StaticResource menuButton}">
+            <Button Style="{StaticResource menuButton}" Click="NoiseRemover_Click">
                 <StackPanel Orientation="Horizontal">
                     <fa:ImageAwesome Icon="DotCircleOutline" Style="{StaticResource menuButtonIcon}"></fa:ImageAwesome>
-                    <TextBlock Text="Clean" Style="{StaticResource menuButtonText}"></TextBlock>
+                    <TextBlock Text="Noise removal" Style="{StaticResource menuButtonText}"></TextBlock>
                 </StackPanel>
             </Button>
             <Button Style="{StaticResource menuButton}">
@@ -90,9 +87,36 @@
                     <TextBlock Text="Convert" Style="{StaticResource menuButtonText}"></TextBlock>
                 </StackPanel>
             </Button>
-            
+            <Label Name="brightness_item" Foreground="#7f8cc4" Margin="30 5 30 5">Яркость:</Label>
+
+            <ComboBox Name="brightnessPercentage" Margin="30 5 100 5" SelectionChanged="brightnessPercentage_SelectionChanged">
+                <ComboBoxItem Tag="10">10%</ComboBoxItem>
+                <ComboBoxItem Tag="20">20%</ComboBoxItem>
+                <ComboBoxItem Tag="30">30%</ComboBoxItem>
+                <ComboBoxItem Tag="40">40%</ComboBoxItem>
+                <ComboBoxItem Tag="50">50%</ComboBoxItem>
+                <ComboBoxItem Tag="-50">-50%</ComboBoxItem>
+                <ComboBoxItem Tag="-40">-40%</ComboBoxItem>
+                <ComboBoxItem Tag="-30">-30%</ComboBoxItem>
+                <ComboBoxItem Tag="-20">-20%</ComboBoxItem>
+                <ComboBoxItem Tag="-10">-10%</ComboBoxItem>
+            </ComboBox>
+
+            <Label Name="contrast_item" Foreground="#7f8cc4" Margin="30 5 30 5">Контраст:</Label>
+
+            <ComboBox Name="contrastPercentage" Margin="30 5 100 5" SelectionChanged="contrastPercentage_SelectionChanged">
+                <ComboBoxItem Tag="10">10%</ComboBoxItem>
+                <ComboBoxItem Tag="20">20%</ComboBoxItem>
+                <ComboBoxItem Tag="30">30%</ComboBoxItem>
+                <ComboBoxItem Tag="40">40%</ComboBoxItem>
+                <ComboBoxItem Tag="50">50%</ComboBoxItem>
+                <ComboBoxItem Tag="-50">-50%</ComboBoxItem>
+                <ComboBoxItem Tag="-40">-40%</ComboBoxItem>
+                <ComboBoxItem Tag="-30">-30%</ComboBoxItem>
+                <ComboBoxItem Tag="-20">-20%</ComboBoxItem>
+                <ComboBoxItem Tag="-10">-10%</ComboBoxItem>
+            </ComboBox>
         </StackPanel>
-        
         <!--main section-->
         <Border Grid.Column="1" CornerRadius="0 10 10 0" MouseDown="Border_MouseDown">
             <Border.Background>
@@ -103,8 +127,9 @@
             </Border.Background>
         </Border>
 
+
         <local:UpgGrid Grid.Column="1">
-            <Image x:Name="mainImage" Stretch="Uniform"/>
+            <Image x:Name="mainImage" Stretch="Uniform" MouseLeftButtonDown="Image_Click" MouseRightButtonDown="Image_UnClick"/>
         </local:UpgGrid>
         
     </Grid>
