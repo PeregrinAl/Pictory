@@ -188,36 +188,42 @@ namespace Pictory
 
         private void brightnessPercentage_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            BitmapSource image = (BitmapSource)mainImage.Source;
-
-            int[,] arrR = new int[image.PixelWidth, image.PixelHeight];
-            int[,] arrG = new int[image.PixelWidth, image.PixelHeight];
-            int[,] arrB = new int[image.PixelWidth, image.PixelHeight];
-            Bitmap image2 = ImageDispatcher.BitmapSourceToBitmap(image);
-
-            for (int i = 0; i < image2.Width; i++)
+            try
             {
-                for (int j = 0; j < image2.Height; j++)
-                {
-                    arrR[i, j] = image2.GetPixel(i, j).R;
-                    arrG[i, j] = image2.GetPixel(i, j).G;
-                    arrB[i, j] = image2.GetPixel(i, j).B;
-                }
-            }
+                BitmapSource image = (BitmapSource)mainImage.Source;
 
-            for (int i = 1; i < image2.Width - 1; i++)
-            {
-                for (int j = 1; j < image2.Height - 1; j++)
+                int[,] arrR = new int[image.PixelWidth, image.PixelHeight];
+                int[,] arrG = new int[image.PixelWidth, image.PixelHeight];
+                int[,] arrB = new int[image.PixelWidth, image.PixelHeight];
+                Bitmap image2 = ImageDispatcher.BitmapSourceToBitmap(image);
+
+                for (int i = 0; i < image2.Width; i++)
                 {
-                    int red = arrR[i, j] + Convert.ToInt32(((ComboBoxItem)brightnessPercentage.SelectedItem).Tag) * 128 / 100;
-                    int green = arrG[i, j] + Convert.ToInt32(((ComboBoxItem)brightnessPercentage.SelectedItem).Tag) * 128 / 100;
-                    int blue = arrB[i, j] + Convert.ToInt32(((ComboBoxItem)brightnessPercentage.SelectedItem).Tag) * 128 / 100;
-                    image2.SetPixel(i, j, System.Drawing.Color.FromArgb(red < 0.0 ? 0 : red > 255.0 ? 255 : red,
-                        green < 0.0 ? 0 : green > 255.0 ? 255 : green,
-                        blue < 0.0 ? 0 : blue > 255.0 ? 255 : blue));
+                    for (int j = 0; j < image2.Height; j++)
+                    {
+                        arrR[i, j] = image2.GetPixel(i, j).R;
+                        arrG[i, j] = image2.GetPixel(i, j).G;
+                        arrB[i, j] = image2.GetPixel(i, j).B;
+                    }
                 }
+
+                for (int i = 1; i < image2.Width - 1; i++)
+                {
+                    for (int j = 1; j < image2.Height - 1; j++)
+                    {
+                        int red = arrR[i, j] + Convert.ToInt32(((ComboBoxItem)brightnessPercentage.SelectedItem).Tag) * 128 / 100;
+                        int green = arrG[i, j] + Convert.ToInt32(((ComboBoxItem)brightnessPercentage.SelectedItem).Tag) * 128 / 100;
+                        int blue = arrB[i, j] + Convert.ToInt32(((ComboBoxItem)brightnessPercentage.SelectedItem).Tag) * 128 / 100;
+                        image2.SetPixel(i, j, System.Drawing.Color.FromArgb(red < 0.0 ? 0 : red > 255.0 ? 255 : red,
+                            green < 0.0 ? 0 : green > 255.0 ? 255 : green,
+                            blue < 0.0 ? 0 : blue > 255.0 ? 255 : blue));
+                    }
+                }
+                mainImage.Source = ImageDispatcher.BitmapToImageSource(image2);
             }
-            mainImage.Source = ImageDispatcher.BitmapToImageSource(image2);
+            catch (Exception) {
+                MessageBox.Show("Please, load picture");
+            }
         }
 
         private void contrastPercentage_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -265,6 +271,15 @@ namespace Pictory
                 }
             }
             mainImage.Source = ImageDispatcher.BitmapToImageSource(image2);
+        }
+
+        private void Filter_Click(object sender, RoutedEventArgs e)
+        {
+            // double[,] arr = { { -1, -1, -1 }, { -1, 9, -1 }, { -1, -1, -1 } };
+            //double[,] arr = { { 1, 1, 1 }, { 9, 0, 9 }, { 1, 1, 1 } };
+            double[,] arr = { { 0.1, 0.1, 0.1 }, { 0.1, 0.1, 0.1 }, { 0.1, 0.1, 0.1 } };
+            Bitmap image = Convolution.Apply(ImageDispatcher.BitmapSourceToBitmap((BitmapSource)mainImage.Source), arr);
+            mainImage.Source = ImageDispatcher.BitmapToImageSource(image);
         }
     }
 }

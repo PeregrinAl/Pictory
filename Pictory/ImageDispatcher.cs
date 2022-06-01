@@ -22,114 +22,16 @@ namespace Pictory
             return LockBitmap(B, PixelFormat.Format32bppRgb, 4);
         }
 
-        /*public ByteImage ToByteImage()
-        {
-            ByteImage res = new ByteImage(Width, Height);
-            for (int i = 0; i < res.rawdata.Length; i++)
-            {
-                byte c = rawdata[i] < 0.0f ? (byte)0 : rawdata[i] > 255.0f ? (byte)255 : (byte)rawdata[i];
-                res.rawdata[i] = new ColorBytePixel() { b = c, g = c, r = c, a = 0 };
-            }
-            return res;
-        }*/
-    static string ReadString(Stream stream)
-        {
-            StringBuilder sb = new StringBuilder();
-            int c1 = stream.ReadByte();
-            if (c1 == -1)
-                return null;
-
-            while (true)
-            {
-                if (c1 == 13 || c1 == 10 || c1 == -1)
-                    return sb.ToString();
-                else
-                    sb.Append((char)c1);
-
-                c1 = stream.ReadByte();
-            }
-        }
-
         public static Bitmap BitmapSourceToBitmap(BitmapSource bitmapSource)
         {
-            var width = bitmapSource.PixelWidth;
-            var height = bitmapSource.PixelHeight;
-            var stride = width * ((bitmapSource.Format.BitsPerPixel + 7) / 8);
+            int width = bitmapSource.PixelWidth;
+            int height = bitmapSource.PixelHeight;
+            int stride = width * ((bitmapSource.Format.BitsPerPixel + 7) / 8);
             var memoryBlockPointer = Marshal.AllocHGlobal(height * stride);
             bitmapSource.CopyPixels(new Int32Rect(0, 0, width, height), memoryBlockPointer, height * stride, stride);
             var bitmap = new Bitmap(width, height, stride, PixelFormat.Format32bppPArgb, memoryBlockPointer);
             return bitmap;
         }
-        /*static ByteImage ReadPGM(string filename)
-        {
-            FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read);
-            try
-            {
-                while (true)
-                {
-                    string str = ReadString(fs).Trim();
-                    if (str == null)
-                        return null;
-                    else if (str == "" || str.StartsWith("#"))
-                        continue;
-                    else if (str != "P5")
-                        return null;
-                    else
-                        break;
-                }
-
-                int Width = -1, Height = -1, MaxL = -1;
-
-                while (true)
-                {
-                    string str = ReadString(fs).Trim();
-                    if (str == null)
-                        return null;
-                    else if (str == "" || str.StartsWith("#"))
-                        continue;
-                    string[] arr = str.Split(' ', '\t');
-                    Width = int.Parse(arr[0]);
-                    Height = int.Parse(arr[1]);
-                    break;
-                }
-
-                while (true)
-                {
-                    string str = ReadString(fs).Trim();
-                    if (str == null)
-                        return null;
-                    else if (str == "" || str.StartsWith("#"))
-                        continue;
-                    MaxL = int.Parse(str);
-                    break;
-                }
-
-                ByteImage res = new ByteImage(Width, Height);
-
-                if (MaxL <= 255)
-                {
-                    byte[] raw = new byte[Width * Height];
-                    fs.Read(raw, 0, raw.Length);
-                    for (int j = 0; j < Height; j++)
-                        for (int i = 0; i < Width; i++)
-                            res[i, j] = raw[j * Width + i];
-                }
-                else
-                {
-                    byte[] raw = new byte[Width * Height * 2];
-                    fs.Read(raw, 0, raw.Length * 2);
-                    for (int j = 0; j < Height; j++)
-                        for (int i = 0; i < Width; i++)
-                            res[i, j] = raw[(j * Width + i) * 2] + raw[(j * Width + i) * 2 + 1] * 255;
-                }
-
-                return res;
-            }
-            finally
-            {
-                fs.Close();
-            }
-        }*/
 
         public static LockBitmapInfo LockBitmap(Bitmap B, PixelFormat pf, int pixelsize)
         {
@@ -166,10 +68,10 @@ namespace Pictory
                 for (int j = 0; j < image.Height; j++)
                     for (int i = 0; i < image.Width; i++)
                     {
-                        byte c = image[i, j] < 0.0f ? (byte)0 : image[i, j] > 255.0f ? (byte)255 : (byte)image[i, j];
-                        lbi.data[lbi.linewidth * j + i * 4] = c;
-                        lbi.data[lbi.linewidth * j + i * 4 + 1] = c;
-                        lbi.data[lbi.linewidth * j + i * 4 + 2] = c;
+                        ColorBytePixel p = image[i, j];
+                        lbi.data[lbi.linewidth * j + i * 4] = p.b < 0.0f ? (byte)0 : p.b > 255.0f ? (byte)255 : (byte)p.b;
+                        lbi.data[lbi.linewidth * j + i * 4 + 1] = p.g < 0.0f ? (byte)0 : p.g > 255.0f ? (byte)255 : (byte)p.g;
+                        lbi.data[lbi.linewidth * j + i * 4 + 2] = p.r < 0.0f ? (byte)0 : p.r > 255.0f ? (byte)255 : (byte)p.r;
                     }
             }
             finally
@@ -178,6 +80,20 @@ namespace Pictory
             }
 
             return B;
+        }
+
+        internal static Bitmap GetBitmap(byte[] bytes, int width, int height)
+        {
+            int ch = 4; //number of channels (ie. assuming 24 bit RGB in this case)
+
+            byte[] imageData = new byte[width * height * ch]; //you image data here
+            imageData = bytes;
+            Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+            BitmapData bmData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+            IntPtr pNative = bmData.Scan0;
+            Marshal.Copy(imageData, 0, pNative, width * height * ch);
+            bmData.Scan0 = pNative;
+            return bitmap;
         }
 
         public static BitmapImage BitmapToImageSource(Bitmap bitmap)
@@ -218,14 +134,16 @@ namespace Pictory
                 try
                 {
                     for (int j = 0; j < H; j++)
+                    {
                         for (int i = 0; i < W; i++)
                         {
                             int c = lbi.data[lbi.linewidth * j + i];
-                            int b = pal[c * 4];
-                            int g = pal[c * 4 + 1];
-                            int r = pal[c * 4 + 2];
-                            res[i, j] = (byte)(0.114f * b + 0.587f * g + 0.299f * r);
+                            byte b = pal[c * 4];
+                            byte g = pal[c * 4 + 1];
+                            byte r = pal[c * 4 + 2];
+                            res[i, j] = new ColorBytePixel() { b = b, g = g, r = r, a = 255 };
                         }
+                    }
                 }
                 finally
                 {
@@ -238,16 +156,19 @@ namespace Pictory
                 try
                 {
                     for (int j = 0; j < H; j++)
+                    {
                         for (int i = 0; i < W; i++)
                         {
-                            int b = lbi.data[lbi.linewidth * j + i * 4];
-                            int g = lbi.data[lbi.linewidth * j + i * 4 + 1];
-                            int r = lbi.data[lbi.linewidth * j + i * 4 + 2];
-                            res[i, j] = (byte)(0.114f * b + 0.587f * g + 0.299f * r);
+                            byte b = lbi.data[lbi.linewidth * j + i * 4];
+                            byte g = lbi.data[lbi.linewidth * j + i * 4 + 1];
+                            byte r = lbi.data[lbi.linewidth * j + i * 4 + 2];
+                            res[i, j] = res[i, j] = new ColorBytePixel() { b = b, g = g, r = r, a = 255 };
                         }
+                    }
                 }
                 finally
                 {
+                    res.bitmap = B;
                     UnlockBitmap(lbi);
                 }
             }
@@ -255,7 +176,7 @@ namespace Pictory
             return res;
         }
 
-        /*public static ByteImage BitmapToColorByteImage(Bitmap B)
+        public static ByteImage BitmapToColorByteImage(Bitmap B)
         {
             int W = B.Width, H = B.Height;
             ByteImage res = new ByteImage(W, H);
@@ -277,6 +198,7 @@ namespace Pictory
                 try
                 {
                     for (int j = 0; j < H; j++)
+                    {
                         for (int i = 0; i < W; i++)
                         {
                             int c = lbi.data[lbi.linewidth * j + i];
@@ -285,6 +207,7 @@ namespace Pictory
                             byte r = pal[c * 4 + 2];
                             res[i, j] = new ColorBytePixel() { b = b, g = g, r = r, a = 255 };
                         }
+                    }
                 }
                 finally
                 {
@@ -297,6 +220,7 @@ namespace Pictory
                 try
                 {
                     for (int j = 0; j < H; j++)
+                    {
                         for (int i = 0; i < W; i++)
                         {
                             byte b = lbi.data[lbi.linewidth * j + i * 4];
@@ -304,6 +228,7 @@ namespace Pictory
                             byte r = lbi.data[lbi.linewidth * j + i * 4 + 2];
                             res[i, j] = new ColorBytePixel() { b = b, g = g, r = r, a = 255 };
                         }
+                    }
                 }
                 finally
                 {
@@ -312,9 +237,31 @@ namespace Pictory
             }
 
             return res;
-        }*/
+        }
 
+        internal static byte[] BitmapToByteArray(Bitmap bitmap)
+        {
+            BitmapData bmpdata = null;
+
+            try
+            {
+                bmpdata = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+                int numbytes = bmpdata.Stride * bitmap.Height;
+                byte[] bytedata = new byte[numbytes];
+                IntPtr ptr = bmpdata.Scan0;
+
+                Marshal.Copy(ptr, bytedata, 0, numbytes);
+
+                return bytedata;
+            }
+            finally
+            {
+                if (bmpdata != null)
+                    bitmap.UnlockBits(bmpdata);
+            }
+        }
     }
+    
     public unsafe struct LockBitmapInfo
     {
         public Bitmap B;

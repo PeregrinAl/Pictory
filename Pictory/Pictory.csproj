@@ -69,6 +69,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ByteImage.cs" />
+    <Compile Include="Convolution.cs" />
     <Compile Include="DefaultDialogService.cs" />
     <Compile Include="IDialogService.cs" />
     <Compile Include="IFileService.cs" />

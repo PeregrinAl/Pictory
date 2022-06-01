@@ -75,7 +75,7 @@
                     <TextBlock Text="Noise removal" Style="{StaticResource menuButtonText}"></TextBlock>
                 </StackPanel>
             </Button>
-            <Button Style="{StaticResource menuButton}">
+            <Button Style="{StaticResource menuButton}" Click="Filter_Click">
                 <StackPanel Orientation="Horizontal">
                     <fa:ImageAwesome Icon="Filter" Style="{StaticResource menuButtonIcon}"></fa:ImageAwesome>
                     <TextBlock Text="Filter" Style="{StaticResource menuButtonText}"></TextBlock>

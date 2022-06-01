@@ -16,16 +16,27 @@ namespace Pictory
     {
         public int Width { get; private set; }
         public int Height { get; private set; }
-        public readonly byte[] rawdata;
+        public readonly ColorBytePixel[] rawdata;
+        public byte[] byteArr;
+        public Bitmap bitmap;
 
         public ByteImage(int Width, int Height)
         {
             this.Width = Width;
             this.Height = Height;
-            rawdata = new byte[Width * Height];
+            rawdata = new ColorBytePixel[Width * Height];
         }
 
-        public byte this[int x, int y]
+        public ByteImage(int Width, int Height, Bitmap bitmap)
+        {
+            this.Width = Width;
+            this.Height = Height;
+            this.bitmap = bitmap;
+            rawdata = new ColorBytePixel[Width * Height];
+            byteArr = new byte[Width * Height  * 4];
+        }
+
+        public ColorBytePixel this[int x, int y]
         {
             get
             {

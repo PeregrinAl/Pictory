@@ -14,7 +14,7 @@ namespace Pictory
             {
                 for (int x = 0; x < image.Width / 2; x++)
                 {
-                    byte p = image[x, y];
+                    ColorBytePixel p = image[x, y];
                     image[x, y] = image[image.Width - 1 - x, y];
                     image[image.Width - 1 - x, y] = p;
                 }
